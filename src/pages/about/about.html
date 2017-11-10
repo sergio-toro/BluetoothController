@@ -1,11 +1,51 @@
 <ion-header>
-  <ion-navbar>
+  <ion-toolbar>
     <ion-title>
-      About
+      Bluetooth
     </ion-title>
-  </ion-navbar>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content padding *ngIf="!btEnabled">
+  <button ion-button margin-top full large (click)="enableBluetooth()">
+    Turn ON Bluetooth
+  </button>
+</ion-content>
 
+<ion-content>
+  <ion-item-group>
+    <ion-item-divider color="light">
+      Paired devices
+    </ion-item-divider>
+    <ion-item *ngFor="let device of pairedDevices">
+      <h2>{{device.name}}</h2>
+      <p>{{device.id}}</p>
+      <button ion-button icon-left item-end>
+        <ion-icon name="bluetooth"></ion-icon>
+        Connect
+      </button>
+    </ion-item>
+
+    <ion-item-divider color="light">
+      Available devices
+      <span item-end *ngIf="btScanning">
+        <ion-spinner name="crescent"></ion-spinner>
+      </span>
+      <button *ngIf="!btScanning" ion-button icon-left clear item-end
+        (click)="discoverUnpairedDevices()"
+      >
+        <ion-icon name="ios-refresh-circle"></ion-icon>
+        Refresh
+      </button>
+    </ion-item-divider>
+    <ion-item *ngFor="let device of unpairedDevices">
+      <h2>{{device.name}}</h2>
+      <p>{{device.id}}</p>
+      <button ion-button icon-left item-end>
+        <ion-icon name="bluetooth"></ion-icon>
+        Connect
+      </button>
+    </ion-item>
+
+  </ion-item-group>
 </ion-content>
