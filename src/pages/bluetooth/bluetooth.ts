@@ -4,10 +4,10 @@ import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
 import { NavController } from 'ionic-angular';
 
 @Component({
-  selector: 'page-about',
-  templateUrl: 'about.html'
+  selector: 'page-bluetooth',
+  templateUrl: 'bluetooth.html'
 })
-export class AboutPage implements OnInit {
+export class BluetoothPage implements OnInit {
   btEnabled: boolean = false;
   btScanning: boolean = false;
   pairedDevices = [];

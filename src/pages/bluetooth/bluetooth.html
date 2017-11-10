@@ -6,14 +6,19 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding *ngIf="!btEnabled">
-  <button ion-button margin-top full large (click)="enableBluetooth()">
+<ion-content>
+  <button
+    *ngIf="!btEnabled"
+    ion-button
+    margin-top
+    full
+    large
+    (click)="enableBluetooth()"
+  >
     Turn ON Bluetooth
   </button>
-</ion-content>
 
-<ion-content>
-  <ion-item-group>
+  <ion-item-group *ngIf="btEnabled">
     <ion-item-divider color="light">
       Paired devices
     </ion-item-divider>
@@ -34,7 +39,7 @@
       <button *ngIf="!btScanning" ion-button icon-left clear item-end
         (click)="discoverUnpairedDevices()"
       >
-        <ion-icon name="ios-refresh-circle"></ion-icon>
+        <ion-icon name="refresh"></ion-icon>
         Refresh
       </button>
     </ion-item-divider>

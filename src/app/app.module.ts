@@ -4,7 +4,7 @@ import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
-import { AboutPage } from '../pages/about/about';
+import { BluetoothPage } from '../pages/bluetooth/bluetooth';
 import { ContactPage } from '../pages/contact/contact';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
@@ -15,7 +15,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 @NgModule({
   declarations: [
     MyApp,
-    AboutPage,
+    BluetoothPage,
     ContactPage,
     HomePage,
     TabsPage
@@ -27,7 +27,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    AboutPage,
+    BluetoothPage,
     ContactPage,
     HomePage,
     TabsPage
