@@ -1,8 +1,8 @@
 {
-  "name": "new-ionic3-angular4",
+  "name": "com-storo90-bluetoothcontroller",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "http://ionicframework.com/",
+  "author": "Sergio Toro<sergio.toro.castano@gmail.com>",
+  "homepage": "https://github.com/sergio-toro",
   "private": true,
   "scripts": {
     "clean": "ionic-app-scripts clean",
@@ -47,7 +47,7 @@
     "android-versions": "^1.2.1",
     "typescript": "2.4.2"
   },
-  "description": "An Ionic project",
+  "description": "Control a device over bluetooth.",
   "cordova": {
     "plugins": {
       "cordova-plugin-bluetooth-serial": {},
