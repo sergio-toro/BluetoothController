@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
-import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
+import { BluetoothService, BluetoothDevice } from '../../services/bluetooth-service';
 import { NavController } from 'ionic-angular';
 
 @Component({
@@ -13,20 +12,24 @@ export class BluetoothPage implements OnInit {
   pairedDevices = [];
   unpairedDevices = [];
 
-  constructor(public navCtrl: NavController, private bluetoothSerial: BluetoothSerial) { }
+  constructor(public navCtrl: NavController, private bluetoothService: BluetoothService) { }
 
   ngOnInit() {
-    this.bluetoothSerial.isEnabled()
-      .then(() => this.onBluetoothEnabled())
-      .catch(() => this.enableBluetooth())
+    this.bluetoothService.isEnabled()
+      .subscribe(
+        () => this.onBluetoothEnabled(),
+        () => this.enableBluetooth()
+      );
   }
 
   enableBluetooth() {
-    this.bluetoothSerial.enable()
-      .then(() => this.onBluetoothEnabled())
-      .catch((error: string) => {
-        console.log('ERROR', error);
-      })
+    this.bluetoothService.enable()
+      .subscribe(
+        () => this.onBluetoothEnabled(),
+        (error: string) => {
+          console.log('ERROR', error);
+        }
+      );
   }
 
   onBluetoothEnabled() {
@@ -36,26 +39,29 @@ export class BluetoothPage implements OnInit {
   }
 
   listPairedDevices() {
-    this.bluetoothSerial.list()
-      .then((devices: any): any => {
-        this.pairedDevices = devices;
-      })
-      .catch((error): void => {
-        console.log('listPairedDevices ERROR', error)
-      })
+    this.bluetoothService.listPairedDevices()
+      .subscribe(
+        (devices: BluetoothDevice[]) => {
+          this.pairedDevices = devices;
+        },
+        (error) => {
+          console.log('listPairedDevices ERROR', error)
+        },
+      );
   }
 
   discoverUnpairedDevices() {
     this.btScanning = true;
-    this.bluetoothSerial.discoverUnpaired()
-      .then((devices: any): any => {
-        this.btScanning = false;
-        this.unpairedDevices = devices;
-      })
-      .catch((error): void => {
-        this.btScanning = false;
-        console.log('discoverUnpairedDevices ERROR', error)
-      })
+    this.bluetoothService.discoverUnpairedDevices()
+      .subscribe(
+        (devices: BluetoothDevice[]) => {
+          this.unpairedDevices = devices;
+        },
+        (error) => {
+          console.log('discoverUnpairedDevices ERROR', error)
+        },
+        () => { this.btScanning = false; }
+      );
   }
 
 }
