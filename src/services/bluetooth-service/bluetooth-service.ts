@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
+import { Events } from 'ionic-angular';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
 import { Observable } from 'rxjs/Observable';
 import uniqBy from 'lodash/uniqBy';
 import 'rxjs/add/observable/fromPromise';
-import 'rxjs/add/observable/merge';
 
 import { BluetoothDevice } from './bluetooth-device';
 
@@ -22,7 +22,11 @@ export class BluetoothService {
   PAIRED_STORAGE_KEY: string = 'PAIRED_DEVICES';
   UNPAIRED_STORAGE_KEY: string = 'UNPAIRED_DEVICES';
 
-  constructor(private storage: Storage, private bluetoothSerial: BluetoothSerial) {
+  constructor(
+    private storage: Storage,
+    private bluetoothSerial: BluetoothSerial,
+    private events: Events,
+  ) {
 
     storage.ready()
       .then(() => {
@@ -42,6 +46,9 @@ export class BluetoothService {
   enable(): Observable<void> {
     return Observable.fromPromise(
       this.bluetoothSerial.enable()
+        .then(() => {
+          this.events.publish('bluetooth:enabled', true);
+        })
     );
   }
 
