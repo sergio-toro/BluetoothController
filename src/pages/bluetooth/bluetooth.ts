@@ -7,8 +7,8 @@ import { NavController } from 'ionic-angular';
   templateUrl: 'bluetooth.html'
 })
 export class BluetoothPage implements OnInit {
-  btEnabled: boolean = false;
   btScanning: boolean = false;
+  connectedDevice: BluetoothDevice;
   pairedDevices = [];
   unpairedDevices = [];
 
@@ -16,26 +16,23 @@ export class BluetoothPage implements OnInit {
 
   ngOnInit() {
     this.bluetoothService.isEnabled()
-      .subscribe(
-        () => this.onBluetoothEnabled(),
-        () => this.enableBluetooth()
-      );
-  }
-
-  enableBluetooth() {
-    this.bluetoothService.enable()
-      .subscribe(
-        () => this.onBluetoothEnabled(),
-        (error: string) => {
-          console.log('ERROR', error);
+      .subscribe((connected) => {
+        if (connected) {
+          this.listPairedDevices();
+          this.discoverUnpairedDevices();
         }
-      );
+      });
   }
 
-  onBluetoothEnabled() {
-    this.btEnabled = true;
-    this.listPairedDevices();
-    this.discoverUnpairedDevices();
+  connectToDevice(device: BluetoothDevice) {
+    this.bluetoothService.connectToDevice(device)
+      .then((data) => {
+        console.log('CONNECTED', data);
+        this.connectedDevice = device;
+      })
+      .catch((error) => {
+        console.log('ERROR', error)
+      });
   }
 
   listPairedDevices() {

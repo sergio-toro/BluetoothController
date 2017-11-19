@@ -7,27 +7,27 @@
 </ion-header>
 
 <ion-content>
-  <button
-    *ngIf="!btEnabled"
-    ion-button
-    margin-top
-    full
-    large
-    (click)="enableBluetooth()"
-  >
-    Turn ON Bluetooth
-  </button>
-
-  <ion-item-group *ngIf="btEnabled">
+  <ion-item-group>
     <ion-item-divider color="light">
       Paired devices
     </ion-item-divider>
     <ion-item *ngFor="let device of pairedDevices">
       <h2>{{device.name}}</h2>
       <p>{{device.id}}</p>
-      <button ion-button icon-left item-end>
+      <button *ngIf="connectedDevice?.id !== device.id" ion-button icon-left item-end (click)="connectToDevice(device)">
         <ion-icon name="bluetooth"></ion-icon>
         Connect
+      </button>
+      <button
+        *ngIf="connectedDevice?.id === device.id"
+        ion-button
+        color="light"
+        icon-left
+        item-end
+        (click)="connectToDevice(device)"
+      >
+        <ion-icon name="bluetooth"></ion-icon>
+        Disconnect
       </button>
     </ion-item>
 
@@ -46,9 +46,20 @@
     <ion-item *ngFor="let device of unpairedDevices">
       <h2>{{device.name}}</h2>
       <p>{{device.id}}</p>
-      <button ion-button icon-left item-end>
+      <button *ngIf="connectedDevice?.id !== device.id" ion-button icon-left item-end (click)="connectToDevice(device)">
         <ion-icon name="bluetooth"></ion-icon>
         Connect
+      </button>
+      <button
+        *ngIf="connectedDevice?.id === device.id"
+        ion-button
+        color="light"
+        icon-left
+        item-end
+        (click)="connectToDevice(device)"
+      >
+        <ion-icon name="bluetooth"></ion-icon>
+        Disconnect
       </button>
     </ion-item>
 

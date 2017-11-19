@@ -11,7 +11,7 @@ import { EnableBluetoothPage } from '../pages/enable-bluetooth/enable-bluetooth'
   templateUrl: 'app.html'
 })
 export class MyApp {
-  rootPage:any;
+  rootPage: any;
 
   constructor(
     platform: Platform,
@@ -23,28 +23,17 @@ export class MyApp {
     platform.ready().then(() => {
       statusBar.styleLightContent();
 
-      // start checking if BT is enabled
-      setInterval(() => {
-        bluetooth.isEnabled().subscribe(
-          () => { this.rootPage = TabsPage; },
-          (error) => { this.rootPage = EnableBluetoothPage; }
-        );
-      }, 5000);
-
-      bluetooth.isEnabled().subscribe(
-        () => {
-          this.rootPage = TabsPage;
-          splashScreen.hide();
-
-          events.subscribe('bluetooth:enabled', () => {
-            this.rootPage = TabsPage;
-          });
-        },
-        (error) => {
-          this.rootPage = EnableBluetoothPage;
+      bluetooth.isEnabled().subscribe((connected) => {
+        if (!this.rootPage) {
           splashScreen.hide();
         }
-      );
+
+        if (connected) {
+          this.rootPage = TabsPage;
+        } else {
+          this.rootPage = EnableBluetoothPage;
+        }
+      });
     });
   }
 }
