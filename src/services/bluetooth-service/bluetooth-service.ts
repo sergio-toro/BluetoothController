@@ -20,7 +20,6 @@ const uniqDevices = (devices: BluetoothDevice[]): BluetoothDevice[] => (
 */
 @Injectable()
 export class BluetoothService {
-  BT_CHECK_TIMEOUT: number = 5000;
   PAIRED_KEY: string = 'PAIRED_DEVICES';
   UNPAIRED_KEY: string = 'UNPAIRED_DEVICES';
   CONNECTED_KEY: string = 'CONNECTED_DEVICE';

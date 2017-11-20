@@ -1,5 +1,4 @@
 import { Observable } from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
 import { Subject } from 'rxjs/Subject';
 
 export class BluetoothCheck {
@@ -22,12 +21,10 @@ export class BluetoothCheck {
   check(): void {
     this.bluetoothCheck()
       .then((value) => {
-        console.log('bluetoothCheck OK');
         this.sendEnabled();
         setTimeout(this.check.bind(this), this.BT_CHECK_TIMEOUT);
       })
       .catch((err) => {
-        console.log('bluetoothCheck FAIL');
         this.sendDisabled();
         setTimeout(this.check.bind(this), this.BT_CHECK_TIMEOUT);
       });

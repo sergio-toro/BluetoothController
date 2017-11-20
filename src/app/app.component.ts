@@ -23,12 +23,12 @@ export class MyApp {
     platform.ready().then(() => {
       statusBar.styleLightContent();
 
-      bluetooth.isEnabled().subscribe((connected) => {
+      bluetooth.isEnabled().subscribe((enabled) => {
         if (!this.rootPage) {
           splashScreen.hide();
         }
 
-        if (connected) {
+        if (enabled) {
           this.rootPage = TabsPage;
         } else {
           this.rootPage = EnableBluetoothPage;
