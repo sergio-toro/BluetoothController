@@ -1,16 +1,16 @@
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 export class BluetoothCheck {
   BT_CHECK_TIMEOUT: number = 5000;
 
-  subject: Subject<boolean>;
+  subject: ReplaySubject<boolean>;
   bluetoothCheck;
 
   constructor(bluetoothCheck) {
     this.bluetoothCheck = bluetoothCheck;
 
-    this.subject = new Subject();
+    this.subject = new ReplaySubject(1);
     this.check();
   }
 

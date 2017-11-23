@@ -16,8 +16,8 @@ export class BluetoothPage implements OnInit {
 
   ngOnInit() {
     this.bluetoothService.isEnabled()
-      .subscribe((connected) => {
-        if (connected) {
+      .subscribe((enabled) => {
+        if (enabled) {
           this.listPairedDevices();
           this.discoverUnpairedDevices();
         }

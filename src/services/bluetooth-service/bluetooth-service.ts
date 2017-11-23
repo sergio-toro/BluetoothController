@@ -1,37 +1,29 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
-import { Events } from 'ionic-angular';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
 import { Observable } from 'rxjs/Observable';
 import uniqBy from 'lodash/uniqBy';
 import 'rxjs/add/observable/fromPromise';
 
-import { BluetoothDevice } from './bluetooth-device';
-import { BluetoothCheck } from './bluetooth-check';
+import { BluetoothDevice, BluetoothCheck, ConnectedDevice } from './';
 
 const uniqDevices = (devices: BluetoothDevice[]): BluetoothDevice[] => (
   uniqBy(devices, 'id')
 );
-/*
-  Generated class for the BluetoothServiceProvider provider.
 
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
+
 @Injectable()
 export class BluetoothService {
   PAIRED_KEY: string = 'PAIRED_DEVICES';
   UNPAIRED_KEY: string = 'UNPAIRED_DEVICES';
   CONNECTED_KEY: string = 'CONNECTED_DEVICE';
 
-  connectedDevice: any;
-
   bluetoothCheck: BluetoothCheck;
 
   constructor(
     private storage: Storage,
     private bluetoothSerial: BluetoothSerial,
-    private events: Events,
+    private connectedDevice: ConnectedDevice,
   ) {
 
     storage.ready()
@@ -62,28 +54,25 @@ export class BluetoothService {
 
   connectToDevice(device: BluetoothDevice): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.disconnectFromDevice().then(() => {
-        this.connectedDevice = this.bluetoothSerial.connect(device.id)
-          .subscribe(
-            (data) => {
-              this.storage.set(this.CONNECTED_KEY, device);
-              resolve(data);
-            },
-            (error) => {
-              console.log('connectToDevice Error', JSON.stringify(error));
-              reject(error);
-            }
-          );
-      });
+      this.storage.set(this.CONNECTED_KEY, device).then(() => {
+        this.bluetoothSerial.connect(device.id).subscribe(
+          (data) => {
+            this.connectedDevice.startCheck(device);
+            resolve(data);
+          },
+          (error) => {
+            console.log('connectToDevice Error', JSON.stringify(error));
+            reject(error);
+          }
+        );
+      })
     });
   }
 
   disconnectFromDevice(): Promise<void> {
-    if (this.connectedDevice) {
-      this.connectedDevice.unsubscribe();
-      return this.storage.remove(this.CONNECTED_KEY);
-    }
-    return Promise.resolve();
+    return this.storage
+      .remove(this.CONNECTED_KEY)
+      .then(() => this.bluetoothSerial.disconnect());
   }
 
   listPairedDevices(): Observable<BluetoothDevice[]> {

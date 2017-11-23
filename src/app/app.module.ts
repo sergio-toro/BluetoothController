@@ -13,7 +13,7 @@ import { EnableBluetoothPage } from '../pages/enable-bluetooth/enable-bluetooth'
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { BluetoothService } from '../services/bluetooth-service';
+import { ConnectedDevice, BluetoothService } from '../services/bluetooth-service';
 
 @NgModule({
   declarations: [
@@ -43,6 +43,7 @@ import { BluetoothService } from '../services/bluetooth-service';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     BluetoothSerial,
+    ConnectedDevice,
     BluetoothService,
   ]
 })

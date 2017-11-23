@@ -1,41 +1,47 @@
+import { Injectable } from '@angular/core';
+import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
+import { BluetoothDevice } from './';
+
+@Injectable()
 export class ConnectedDevice {
-  BT_CHECK_TIMEOUT: number = 5000;
+  CHECK_TIMEOUT: number = 5000;
 
-  subject: Subject<boolean>;
-  deviceConnect;
+  subject: ReplaySubject<BluetoothDevice>;
+  device: BluetoothDevice;
 
-  constructor(deviceConnect, device) {
-    this.deviceConnect = deviceConnect;
-
-    this.subject = new Subject();
-
-    if (device) {
-      this.connect(device);
-    }
+  constructor(private bluetoothSerial: BluetoothSerial) {
+    this.subject = new ReplaySubject();
   }
 
-  getObservable(): Observable<boolean> {
+  startCheck(device: BluetoothDevice): void {
+    this.device = device;
+    this.check();
+  }
+
+  getObservable(): Observable<BluetoothDevice> {
     return this.subject;
   }
 
-  connect(): void {
-    this.deviceConnect()
+  check(): void {
+    this.bluetoothSerial.isConnected()
       .then((value) => {
         this.sendConnected();
+        setTimeout(this.check.bind(this), this.CHECK_TIMEOUT);
       })
-      .catch((err) => {
-        this.sendNotConnected(err);
+      .catch(() => {
+        this.sendNotConnected();
+        setTimeout(this.check.bind(this), this.CHECK_TIMEOUT);
       });
   };
 
   sendConnected(): void {
-    this.subject.next(true);
+    this.subject.next(this.device);
   }
 
-  sendNotConnected(err): void {
-    this.subject.next(err);
+  sendNotConnected(): void {
+    this.subject.next(null);
   }
 }
