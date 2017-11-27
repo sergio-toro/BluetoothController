@@ -1,4 +1,4 @@
-export { ConnectedDevice } from './connected-device';
 export { BluetoothService } from './bluetooth-service';
-export { BluetoothDevice } from './bluetooth-device';
+export { Device } from './device';
+export { DeviceCheck } from './device-check';
 export { BluetoothCheck } from './bluetooth-check';

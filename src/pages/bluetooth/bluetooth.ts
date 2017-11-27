@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BluetoothService, BluetoothDevice } from '../../services/bluetooth-service';
+import { BluetoothService, Device } from '../../services/bluetooth-service';
 import { NavController } from 'ionic-angular';
 
 @Component({
@@ -8,37 +8,41 @@ import { NavController } from 'ionic-angular';
 })
 export class BluetoothPage implements OnInit {
   btScanning: boolean = false;
-  connectedDevice: BluetoothDevice;
+  connectedDevice: Device;
   pairedDevices = [];
   unpairedDevices = [];
 
   constructor(public navCtrl: NavController, private bluetoothService: BluetoothService) { }
 
   ngOnInit() {
-    this.bluetoothService.isEnabled()
-      .subscribe((enabled) => {
-        if (enabled) {
-          this.listPairedDevices();
-          this.discoverUnpairedDevices();
+    this.checkDeviceConnected();
+    this.listPairedDevices();
+    this.discoverUnpairedDevices();
+  }
+
+  checkDeviceConnected(): void {
+    this.bluetoothService.isConnected()
+      .subscribe((device: Device) => {
+        if (device) {
+          this.connectedDevice = device;
+        } else {
+          this.connectedDevice = null;
         }
       });
   }
 
-  connectToDevice(device: BluetoothDevice) {
-    this.bluetoothService.connectToDevice(device)
-      .then((data) => {
-        console.log('CONNECTED', data);
-        this.connectedDevice = device;
-      })
-      .catch((error) => {
-        console.log('ERROR', error)
-      });
+  connectToDevice(device: Device) {
+    this.bluetoothService.connectToDevice(device);
+  }
+
+  disconnectFromDevice() {
+    this.bluetoothService.disconnectFromDevice();
   }
 
   listPairedDevices() {
     this.bluetoothService.listPairedDevices()
       .subscribe(
-        (devices: BluetoothDevice[]) => {
+        (devices: Device[]) => {
           this.pairedDevices = devices;
         },
         (error) => {
@@ -51,7 +55,7 @@ export class BluetoothPage implements OnInit {
     this.btScanning = true;
     this.bluetoothService.discoverUnpairedDevices()
       .subscribe(
-        (devices: BluetoothDevice[]) => {
+        (devices: Device[]) => {
           this.unpairedDevices = devices;
         },
         (error) => {

@@ -1,4 +1,4 @@
-export class BluetoothDevice {
+export class Device {
   id: string;
   name: string;
 };
