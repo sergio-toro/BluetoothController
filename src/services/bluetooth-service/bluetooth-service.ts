@@ -6,9 +6,9 @@ import { Observable } from 'rxjs/Observable';
 import uniqBy from 'lodash/uniqBy';
 import 'rxjs/add/observable/fromPromise';
 
-import { BluetoothDevice, BluetoothCheck, DeviceCheck } from './';
+import { Device, BluetoothCheck, DeviceCheck } from './';
 
-const uniqDevices = (devices: BluetoothDevice[]): BluetoothDevice[] => (
+const uniqDevices = (devices: Device[]): Device[] => (
   uniqBy(devices, 'id')
 );
 
@@ -27,17 +27,20 @@ export class BluetoothService {
     private bluetoothSerial: BluetoothSerial,
     private toastCtrl: ToastController,
   ) {
+    this.bluetoothCheck = new BluetoothCheck(bluetoothSerial);
+    this.deviceCheck = new DeviceCheck(bluetoothSerial);
 
-    this.storage.get(this.CONNECTED_KEY)
-      .then((device: Device) => {
-        console.log('Storage (Device):', JSON.stringify(device));
+    this.isEnabled().subscribe((enabled) => {
+      if (!enabled) {
+        return;
+      }
+
+      this.storage.get(this.CONNECTED_KEY).then((device: Device) => {
         if (device) {
           this.connectToDevice(device);
         }
       });
-
-    this.bluetoothCheck = new BluetoothCheck(bluetoothSerial);
-    this.deviceCheck = new DeviceCheck(bluetoothSerial);
+    });
   }
 
   isEnabled(): Observable<boolean> {
@@ -48,42 +51,34 @@ export class BluetoothService {
     return this.deviceCheck.getObservable();
   }
 
-  enable(): Observable<void> {
-    return Observable.fromPromise(
-      this.bluetoothSerial.enable()
-        .then(() => {
-          this.bluetoothCheck.sendEnabled();
-        })
-    );
+  enable(): Promise<void> {
+    return this.bluetoothCheck.enable();
   }
 
-  connectToDevice(device: BluetoothDevice, connectTry: number = 1): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.storage.set(this.CONNECTED_KEY, device).then(() => {
-        this.bluetoothSerial.connect(device.id).subscribe(
-          (data) => {
-            this.deviceCheck.start(device);
-            resolve(data);
-          },
-          (error) => {
-            let toast = this.toastCtrl.create({
-              message: `Failed to connect to ${device.name}. Try ${connectTry}/3`,
-              duration: 3000,
-              showCloseButton: true,
-            });
-            toast.present();
+  connectToDevice(device: Device, connectTry: number = 1): Promise<any> {
+    return this.deviceCheck.connect(device)
+      .then(() => {
+        this.storage.set(this.CONNECTED_KEY, device);
+      })
+      .catch((error) => {
+        let toast = this.toastCtrl.create({
+          message: `Failed to connect to ${device.name}. Try ${connectTry}/3`,
+          duration: 3000,
+          showCloseButton: true,
+        });
+        toast.present();
 
-            console.log('connectToDevice Error', connectTry, JSON.stringify(error));
-            if (connectTry === 3) {
-              reject(error);
-            } else {
-              this.connectToDevice(device, connectTry + 1);
-            }
-
-          }
-        );
+        console.log('connectToDevice Error', connectTry, JSON.stringify(error));
+        if (connectTry === 3) {
+          throw error;
+        } else {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              resolve(this.connectToDevice(device, connectTry + 1));
+            }, 1000);
+          });
+        }
       });
-    });
   }
 
   disconnectFromDevice(): Promise<void> {
@@ -92,11 +87,10 @@ export class BluetoothService {
       .then(() => this.bluetoothSerial.disconnect())
       .then(() => {
         this.deviceCheck.sendNotConnected();
-        return true;
       });
   }
 
-  listPairedDevices(): Observable<BluetoothDevice[]> {
+  listPairedDevices(): Observable<Device[]> {
     return Observable.create((observer) => {
       this.storage.get(this.PAIRED_KEY)
         .then((devices) => {
@@ -117,7 +111,7 @@ export class BluetoothService {
     });
   }
 
-  discoverUnpairedDevices(): Observable<BluetoothDevice[]> {
+  discoverUnpairedDevices(): Observable<Device[]> {
     return Observable.create((observer) => {
       this.storage.get(this.UNPAIRED_KEY)
         .then((devices) => {

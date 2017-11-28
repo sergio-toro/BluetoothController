@@ -25,9 +25,8 @@ export class TabsPage implements OnInit {
   }
 
   checkDeviceConnected(): void {
-    this.bluetoothService.isConnected()
-      .subscribe((device: Device) => {
-        this.isConnected = device ? true : false;
-      });
+    this.bluetoothService.isConnected().subscribe((device: Device) => {
+      this.isConnected = device ? true : false;
+    });
   }
 }

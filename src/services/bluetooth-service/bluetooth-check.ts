@@ -1,22 +1,35 @@
 import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
 
 export class BluetoothCheck {
   BT_CHECK_TIMEOUT: number = 5000;
 
   timeout: any;
-  subject: ReplaySubject<boolean>;
+  subject: BehaviorSubject<boolean>;
   bluetoothSerial: BluetoothSerial;
+
+  isEnabled: boolean = null;
 
   constructor(bluetoothSerial: BluetoothSerial) {
     this.bluetoothSerial = bluetoothSerial;
-    this.subject = new ReplaySubject(1);
+    this.subject = new BehaviorSubject(null);
+
+    this.check();
   }
 
   getObservable(): Observable<boolean> {
-    this.check();
     return this.subject;
+  }
+
+  enable(): Promise<void> {
+    return this.bluetoothSerial.enable()
+      .then(() => {
+        this.check();
+      })
+      .catch(() => {
+        console.log('Failed to enable Bluetooth');
+      });
   }
 
   check(): void {
@@ -24,11 +37,17 @@ export class BluetoothCheck {
 
     this.bluetoothSerial.isEnabled()
       .then((value) => {
-        this.sendEnabled();
+        if (!this.isEnabled) {
+          this.isEnabled = true;
+          this.sendEnabled();
+        }
         this.timeout = setTimeout(this.check.bind(this), this.BT_CHECK_TIMEOUT);
       })
       .catch((err) => {
-        this.sendDisabled();
+        if (this.isEnabled === true) {
+          this.isEnabled = false;
+          this.sendDisabled();
+        }
         this.timeout = setTimeout(this.check.bind(this), this.BT_CHECK_TIMEOUT);
       });
   };

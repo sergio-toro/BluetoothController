@@ -21,14 +21,13 @@ export class BluetoothPage implements OnInit {
   }
 
   checkDeviceConnected(): void {
-    this.bluetoothService.isConnected()
-      .subscribe((device: Device) => {
-        if (device) {
-          this.connectedDevice = device;
-        } else {
-          this.connectedDevice = null;
-        }
-      });
+    this.bluetoothService.isConnected().subscribe((device: Device) => {
+      if (device) {
+        this.connectedDevice = device;
+      } else {
+        this.connectedDevice = null;
+      }
+    });
   }
 
   connectToDevice(device: Device) {
@@ -40,29 +39,27 @@ export class BluetoothPage implements OnInit {
   }
 
   listPairedDevices() {
-    this.bluetoothService.listPairedDevices()
-      .subscribe(
-        (devices: Device[]) => {
-          this.pairedDevices = devices;
-        },
-        (error) => {
-          console.log('listPairedDevices ERROR', error)
-        },
-      );
+    this.bluetoothService.listPairedDevices().subscribe(
+      (devices: Device[]) => {
+        this.pairedDevices = devices;
+      },
+      (error) => {
+        console.log('listPairedDevices ERROR', error)
+      },
+    );
   }
 
   discoverUnpairedDevices() {
     this.btScanning = true;
-    this.bluetoothService.discoverUnpairedDevices()
-      .subscribe(
-        (devices: Device[]) => {
-          this.unpairedDevices = devices;
-        },
-        (error) => {
-          console.log('discoverUnpairedDevices ERROR', error)
-        },
-        () => { this.btScanning = false; }
-      );
+    this.bluetoothService.discoverUnpairedDevices().subscribe(
+      (devices: Device[]) => {
+        this.unpairedDevices = devices;
+      },
+      (error) => {
+        console.log('discoverUnpairedDevices ERROR', error)
+      },
+      () => { this.btScanning = false; }
+    );
   }
 
 }

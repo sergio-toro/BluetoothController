@@ -8,15 +8,7 @@ export class EnableBluetoothPage {
   constructor(private bluetoothService: BluetoothService) { }
 
   enableBluetooth() {
-    this.bluetoothService.enable()
-      .subscribe(
-        () => {
-          console.log('enableBluetooth Bluetooth enabled');
-        },
-        (error: string) => {
-          console.log('enableBluetooth ERROR', error);
-        }
-      );
+    this.bluetoothService.enable();
   }
 
 

@@ -1,6 +1,6 @@
 import { BluetoothSerial } from '@ionic-native/bluetooth-serial';
 import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { Device } from './';
 
@@ -9,17 +9,29 @@ export class DeviceCheck {
 
   timeout: any;
   bluetoothSerial: BluetoothSerial;
-  subject: ReplaySubject<Device>;
+  subject: BehaviorSubject<Device>;
   device: Device;
+
+  isConnected: boolean = null;
 
   constructor(bluetoothSerial: BluetoothSerial) {
     this.bluetoothSerial = bluetoothSerial;
-    this.subject = new ReplaySubject(1);
+    this.subject = new BehaviorSubject(null);
   }
 
-  start(device: Device): void {
-    this.device = device;
-    this.check();
+  connect(device: Device): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.bluetoothSerial.connect(device.id).subscribe(
+        () => {
+          this.device = device;
+          this.check();
+          resolve();
+        },
+        (error) => {
+          reject(error);
+        }
+      );
+    });
   }
 
   getObservable(): Observable<Device> {
@@ -30,11 +42,17 @@ export class DeviceCheck {
     clearTimeout(this.timeout);
     this.bluetoothSerial.isConnected()
       .then((value) => {
-        this.sendConnected();
+        if (!this.isConnected) {
+          this.isConnected = true;
+          this.sendConnected();
+        }
         this.timeout = setTimeout(this.check.bind(this), this.CHECK_TIMEOUT);
       })
       .catch(() => {
-        this.sendNotConnected();
+        if (this.isConnected === true) {
+          this.isConnected = false;
+          this.sendNotConnected();
+        }
         this.timeout = setTimeout(this.check.bind(this), this.CHECK_TIMEOUT);
       });
   };
