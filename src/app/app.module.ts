@@ -6,8 +6,7 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
 import { BluetoothPage } from '../pages/bluetooth/bluetooth';
-import { ContactPage } from '../pages/contact/contact';
-import { HomePage } from '../pages/home/home';
+import { JoystickPage } from '../pages/joystick/joystick';
 import { TabsPage } from '../pages/tabs/tabs';
 import { EnableBluetoothPage } from '../pages/enable-bluetooth/enable-bluetooth';
 
@@ -19,8 +18,7 @@ import { BluetoothService } from '../services/bluetooth-service';
   declarations: [
     MyApp,
     BluetoothPage,
-    ContactPage,
-    HomePage,
+    JoystickPage,
     TabsPage,
     EnableBluetoothPage,
   ],
@@ -33,8 +31,7 @@ import { BluetoothService } from '../services/bluetooth-service';
   entryComponents: [
     MyApp,
     BluetoothPage,
-    ContactPage,
-    HomePage,
+    JoystickPage,
     TabsPage,
     EnableBluetoothPage,
   ],

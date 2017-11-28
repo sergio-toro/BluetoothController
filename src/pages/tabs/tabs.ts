@@ -3,14 +3,14 @@ import { Component, OnInit } from '@angular/core';
 import { BluetoothService, Device } from '../../services/bluetooth-service';
 import { BluetoothPage } from '../bluetooth/bluetooth';
 import { ContactPage } from '../contact/contact';
-import { HomePage } from '../home/home';
+import { JoystickPage } from '../joystick/joystick';
 
 @Component({
   templateUrl: 'tabs.html'
 })
 export class TabsPage implements OnInit {
 
-  tab1Root = HomePage;
+  tab1Root = JoystickPage;
   tab2Root = BluetoothPage;
   tab3Root = ContactPage;
 
